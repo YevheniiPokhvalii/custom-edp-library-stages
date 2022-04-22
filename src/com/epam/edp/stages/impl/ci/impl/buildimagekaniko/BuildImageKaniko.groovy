@@ -40,7 +40,19 @@ class BuildImageKaniko {
         if (awsCliInitContainer) {
             setEnvVariable(awsCliInitContainer.env, "REPO_NAME", resultImageName, true)
             setEnvVariable(awsCliInitContainer.env, "AWS_DEFAULT_REGION", awsRegion)
+
+                // try {
+                    // script.withCredentials([script.string(credentialsId: 'edp-docker-registry', variable: 'DOCKER_SECRET')]){
+                    //     setEnvVariable(awsCliInitContainer.env, "DOCKER_REGISTRY_BASE64_CREDS", "${script.DOCKER_SECRET}")
+                    //     script.println("My secret text is '${script.test}'")
+                    // }
+                // } catch (_) {
+                //     script.println("[JENKINS][DEBUG] Additional Docker Registry credentials were not provided or incorrect")
+                //     }
         }
+
+        // def 
+
         parsedKanikoTemplateYaml.spec.containers[0].args[0] = "--destination=${dockerRegistryHost}/${resultImageName}:${context.codebase.isTag.replaceAll("/", "-")}".toString()
         def yamlData = new Yaml().dump(parsedKanikoTemplateYaml)
         kanikoTemplateFilePath.write(yamlData, null)

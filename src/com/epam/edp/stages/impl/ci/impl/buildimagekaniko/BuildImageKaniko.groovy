@@ -49,6 +49,7 @@ class BuildImageKaniko {
                 // } catch (_) {
                 //     script.println("[JENKINS][DEBUG] Additional Docker Registry credentials were not provided or incorrect")
                 //     }
+
         }
         parsedKanikoTemplateYaml.spec.containers[0].args[0] = "--destination=${dockerRegistryHost}/${resultImageName}:${context.codebase.isTag.replaceAll("/", "-")}".toString()
         def yamlData = new Yaml().dump(parsedKanikoTemplateYaml)

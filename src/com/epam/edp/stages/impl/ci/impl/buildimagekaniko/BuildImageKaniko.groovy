@@ -44,12 +44,13 @@ class BuildImageKaniko {
                 // try {
                     script.withCredentials([string(credentialsId: 'edp-docker-registry', variable: 'DOCKER_REGISTRY_BASE64_CREDS')]) {
                         setEnvVariable(awsCliInitContainer.env, "DOCKER_REGISTRY_BASE64_CREDS", "${DOCKER_REGISTRY_BASE64_CREDS}")
-                        script.sh(script: echo "My secret text is '${DOCKER_REGISTRY_BASE64_CREDS}'")
+                        script.sh(script: """
+                        echo "My secret text is '${DOCKER_REGISTRY_BASE64_CREDS}'"
+                        """)
                 //     }
                 // } catch (_) {
                 //     script.println("[JENKINS][DEBUG] Additional Docker Registry credentials were not provided or incorrect")
                 //     }
-
         }
         parsedKanikoTemplateYaml.spec.containers[0].args[0] = "--destination=${dockerRegistryHost}/${resultImageName}:${context.codebase.isTag.replaceAll("/", "-")}".toString()
         def yamlData = new Yaml().dump(parsedKanikoTemplateYaml)

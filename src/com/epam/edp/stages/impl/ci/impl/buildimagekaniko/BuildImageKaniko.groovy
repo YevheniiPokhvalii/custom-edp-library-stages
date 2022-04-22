@@ -42,7 +42,7 @@ class BuildImageKaniko {
             setEnvVariable(awsCliInitContainer.env, "AWS_DEFAULT_REGION", awsRegion)
 
                 // try {
-                    withCredentials([string(credentialsId: 'edp-docker-registry', variable: 'DOCKER_REGISTRY_BASE64_CREDS')]) {
+                    script.withCredentials([string(credentialsId: 'edp-docker-registry', variable: 'DOCKER_REGISTRY_BASE64_CREDS')]) {
                         setEnvVariable(awsCliInitContainer.env, "DOCKER_REGISTRY_BASE64_CREDS", "${DOCKER_REGISTRY_BASE64_CREDS}")
                         echo "My secret text is '${DOCKER_REGISTRY_BASE64_CREDS}'"
                 //     }

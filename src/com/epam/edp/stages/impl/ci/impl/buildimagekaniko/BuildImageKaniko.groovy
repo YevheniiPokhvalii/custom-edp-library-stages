@@ -49,7 +49,6 @@ class BuildImageKaniko {
                 // } catch (_) {
                 //     script.println("[JENKINS][DEBUG] Additional Docker Registry credentials were not provided or incorrect")
                 //     }
-                
         }
 
         // def 

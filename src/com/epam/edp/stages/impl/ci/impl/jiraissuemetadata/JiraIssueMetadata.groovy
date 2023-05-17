@@ -154,6 +154,9 @@ class JiraIssueMetadata {
 
     def createJiraIssueMetadataCR(platform, path) {
         script.println("[JENKINS][DEBUG] Trying to create JiraIssueMetadata CR")
+        script.sh(
+                script: "cat ${path.getRemote()}",
+                returnStdout: true).trim()
         platform.apply(path.getRemote())
         script.println("[JENKINS][INFO] JiraIssueMetadata CR has been created")
     }
@@ -176,7 +179,12 @@ class JiraIssueMetadata {
             def ticketNamePattern = context.codebase.config.ticketNamePattern
             script.println("[JENKINS][DEBUG] Ticket name pattern has been fetched ${ticketNamePattern}")
             def changes = getChanges(context.workDir)
-            def commits = changes.getCommits()
+            def commits = null
+            try {
+                commits = changes.getCommits()
+            } catch (Exception ex) {
+                script.error "[JENKINS][ERROR] Test: ${ex}"
+            }
             if (commits == null || commits.size() == 0) {
                 script.println("[JENKINS][INFO] No changes since last successful build. Skip creating JiraIssueMetadata CR")
             } else {

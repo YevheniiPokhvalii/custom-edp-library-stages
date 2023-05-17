@@ -30,9 +30,17 @@ class JiraIssueMetadata {
 
     def getChanges(workDir) {
         script.dir("${workDir}") {
-            def publisher = new LastChangesPipelineGlobal(script).getLastChangesPublisher "LAST_SUCCESSFUL_BUILD", "SIDE", "LINE", true, true, "", "", "", "", ""
-            publisher.publishLastChanges()
-            return publisher.getLastChanges()
+            try {
+                def publisher = new LastChangesPipelineGlobal(script).getLastChangesPublisher "LAST_SUCCESSFUL_BUILD", "SIDE", "LINE", true, true, "", "", "", "", ""
+                publisher.publishLastChanges()
+                return publisher.getLastChanges()
+            }
+            catch (Exception ex) {
+                script.println("[JENKINS][DEBUG] Test: ${ex}")
+                def publisher = new LastChangesPipelineGlobal(script).getLastChangesPublisher null, "SIDE", "LINE", true, true, "", "", "", "", ""
+                publisher.publishLastChanges()
+                return publisher.getLastChanges()
+            }
         }
     }
 

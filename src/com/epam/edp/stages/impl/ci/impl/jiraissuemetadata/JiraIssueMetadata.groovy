@@ -96,6 +96,11 @@ class JiraIssueMetadata {
             } else {
                 url = "${jenkinsUrl}/job/${context.codebase.config.name}/job/${context.job.getParameterValue("BRANCH").toUpperCase()}-Build-${context.codebase.config.name}/${script.BUILD_NUMBER}/console"
             }
+//            if (commitMsgPattern == "") {
+//                commitMsgPattern = ticketNamePattern
+//                script.println(ticketNamePattern + " TEST_HELLO")
+//                script.println(info.getCommitMessage().trim().split("\n"))
+//            }
             info.getCommitMessage().trim().split("\n").each { it ->
                 def matcher = (it =~ /${commitMsgPattern}/)
                 if (matcher.matches()) {
@@ -114,7 +119,7 @@ class JiraIssueMetadata {
 
     def buildSpecPayloadTemplate(context, template, links) {
         if (links.size() == 0) {
-            script.println("Skip creating JiraIssueMetadata CR because of commit message wasn't written by correct pattern.")
+            script.println("Skip creating JiraIssueMetadata CR because of the wrong commit message pattern.")
             return null
         }
         def payload = getPayloadField(context.job.ciProject, context.codebase.config.name, getVersion(context), context.codebase.vcsTag)
@@ -154,7 +159,9 @@ class JiraIssueMetadata {
 
     def createJiraIssueMetadataCR(platform, path) {
         script.println("[JENKINS][DEBUG] Trying to create JiraIssueMetadata CR")
-        platform.apply(path.getRemote())
+        def jiraIssueMetadataCr = path.getRemote()
+        script.sh(script: "cat ${jiraIssueMetadataCr}")
+        platform.apply(jiraIssueMetadataCr)
         script.println("[JENKINS][INFO] JiraIssueMetadata CR has been created")
     }
 
@@ -176,7 +183,12 @@ class JiraIssueMetadata {
             def ticketNamePattern = context.codebase.config.ticketNamePattern
             script.println("[JENKINS][DEBUG] Ticket name pattern has been fetched ${ticketNamePattern}")
             def changes = getChanges(context.workDir)
-            def commits = changes.getCommits()
+            def commits = null
+            try {
+                commits = changes.getCommits()
+            } catch (Exception ex) {
+                script.println("[JENKINS][DEBUG] Cannot get commits due to exception: ${ex}")
+            }
             if (commits == null || commits.size() == 0) {
                 script.println("[JENKINS][INFO] No changes since last successful build. Skip creating JiraIssueMetadata CR")
             } else {

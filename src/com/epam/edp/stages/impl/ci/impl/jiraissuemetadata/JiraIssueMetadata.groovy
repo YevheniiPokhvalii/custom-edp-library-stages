@@ -29,10 +29,15 @@ class JiraIssueMetadata {
     Script script
 
     def getChanges(workDir) {
-        script.dir("${workDir}") {
-            def publisher = new LastChangesPipelineGlobal(script).getLastChangesPublisher "LAST_SUCCESSFUL_BUILD", "SIDE", "LINE", true, true, "", "", "", "", ""
-            publisher.publishLastChanges()
-            return publisher.getLastChanges()
+        try {
+            script.dir("${workDir}") {
+                def publisher = new LastChangesPipelineGlobal(script).getLastChangesPublisher "LAST_SUCCESSFUL_BUILD", "SIDE", "LINE", true, true, "", "", "", "", ""
+                publisher.publishLastChanges()
+                return publisher.getLastChanges()
+            }
+        }
+        catch (Exception ex) {
+            script.println("[JENKINS][ERROR] TEST: ${ex}")
         }
     }
 
@@ -154,6 +159,9 @@ class JiraIssueMetadata {
 
     def createJiraIssueMetadataCR(platform, path) {
         script.println("[JENKINS][DEBUG] Trying to create JiraIssueMetadata CR")
+        script.sh(
+                script: "cat ${path.getRemote()}",
+                returnStdout: true).trim()
         platform.apply(path.getRemote())
         script.println("[JENKINS][INFO] JiraIssueMetadata CR has been created")
     }

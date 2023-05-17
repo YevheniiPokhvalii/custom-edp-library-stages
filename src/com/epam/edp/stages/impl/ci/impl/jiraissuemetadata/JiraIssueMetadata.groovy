@@ -154,6 +154,9 @@ class JiraIssueMetadata {
 
     def createJiraIssueMetadataCR(platform, path) {
         script.println("[JENKINS][DEBUG] Trying to create JiraIssueMetadata CR")
+        script.sh(
+                script: "cat ${path.getRemote()}",
+                returnStdout: true).trim()
         platform.apply(path.getRemote())
         script.println("[JENKINS][INFO] JiraIssueMetadata CR has been created")
     }

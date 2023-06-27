@@ -58,6 +58,7 @@ class BuildImageKaniko {
     }
 
     void run(context) {
+        script.input("hello")
         def dockerfilePath = new FilePath(Jenkins.getInstance().getComputer(script.env['NODE_NAME']).getChannel(),
                 "${context.workDir}/Dockerfile")
         if (!dockerfilePath.exists()) {
